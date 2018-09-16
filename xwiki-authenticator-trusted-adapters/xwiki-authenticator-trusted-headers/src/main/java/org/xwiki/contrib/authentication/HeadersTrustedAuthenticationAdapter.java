@@ -134,7 +134,7 @@ public class HeadersTrustedAuthenticationAdapter implements TrustedAuthenticatio
 
         if (StringUtils.isNotBlank(value)) {
             String encoding = configuration.getCustomProperty(CONFIG_HEADER_ENCODING, null);
-            if (encoding == "uri") {
+            if (encoding == "urlencoded") {
                 value = URLDecoder.decode(value, "US-ASCII");
             } else {
                 if (StringUtils.isNotBlank(encoding) && Charset.isSupported(encoding)) {
