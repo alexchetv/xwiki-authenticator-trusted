@@ -22,6 +22,7 @@ package org.xwiki.contrib.authentication;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
@@ -133,15 +134,20 @@ public class HeadersTrustedAuthenticationAdapter implements TrustedAuthenticatio
 
         if (StringUtils.isNotBlank(value)) {
             String encoding = configuration.getCustomProperty(CONFIG_HEADER_ENCODING, null);
-            if (StringUtils.isNotBlank(encoding) && Charset.isSupported(encoding)) {
-                try {
-                    value = new String(value.getBytes("ISO-8859-1"), encoding);
-                } catch (UnsupportedEncodingException e) {
-                    logger.debug("Failed to decode header [{}] using charset [{}].", name, encoding, e);
-                }
+            if (encoding == "uri") {
+                value = URLDecoder.decode(value, "US-ASCII");
             } else {
-                logger.debug("Unsupported charset [{}] requested for decoding headers.", encoding);
+                if (StringUtils.isNotBlank(encoding) && Charset.isSupported(encoding)) {
+                    try {
+                        value = new String(value.getBytes("ISO-8859-1"), encoding);
+                    } catch (UnsupportedEncodingException e) {
+                        logger.debug("Failed to decode header [{}] using charset [{}].", name, encoding, e);
+                    }
+                } else {
+                    logger.debug("Unsupported charset [{}] requested for decoding headers.", encoding);
+                }
             }
+            
         }
 
         return value;
